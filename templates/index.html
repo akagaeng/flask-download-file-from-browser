@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Write text file and download from a browser</title>
+
+    <style>
+        .main {
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+<div class="main">
+    <form>
+        <label for="input_txt">Input text</label>
+        <br/><br/>
+
+        <textarea name="input_txt" id="input_txt" rows="20" cols="100">Please input text here.</textarea>
+
+        <br/><br/>
+        <input type="button" id="input_btn" onclick="sendText()" value="send & download">
+    </form>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    const inputTextArea = document.getElementById("input_txt")
+    const inputButton = document.getElementById("input_btn")
+
+    const uuidv4 = () => {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    const sendText = () => {
+        const inputText = inputTextArea.value;
+        const outFileName = uuidv4()
+
+        if (inputText) {
+            inputButton.disabled = true
+
+            return axios({
+                method: 'post',
+                url: '/text',
+                data: {
+                    text: inputText
+                }, responseType: 'blob'
+            })
+                .then(response => downloadFile(response.data, outFileName))
+                .catch(error => console.error(error))
+                .finally(() => {
+                    inputButton.disabled = false
+                })
+        } else {
+            alert('Please input text!')
+        }
+    }
+
+    const downloadFile = (data, outFileName) => {
+        const url = window.URL.createObjectURL(new Blob([data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${outFileName}.txt`);
+        document.body.appendChild(link);
+        link.click();
+    }
+
+</script>
+
+</body>
+</html>
