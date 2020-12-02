@@ -14,7 +14,7 @@
 * Input text from a web browser
 * Write text to a .txt file
 * Send files from a python flask server
-* Download the text file from a browser
+* Download the text file from a browser (UUID v4 filenames) 
 
 ## Getting started
 
